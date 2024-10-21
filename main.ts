@@ -4,6 +4,26 @@ import './style.css';
 
 let preview: Preview | undefined;
 
+
+const handleVideoCenter = (axis: 'x' | 'y', value: number) => {
+
+  console.log(`${axis} alignment: ${value}`); // Log the alignment value
+
+  try {
+    const modifications = {
+      [`video.${axis}_alignment`]: `${value}%`
+    };
+    preview?.applyModifications(modifications);
+
+    // Log when crossing the 50% mark
+    if (Math.abs(value - 50) < 1) {
+      console.log(`${axis.toUpperCase()} alignment crossing 50%`);
+    }
+  } catch (error) {
+    console.error(`Error updating video ${axis} alignment:`, error);
+  }
+};
+
 document.addEventListener('DOMContentLoaded', function() {
   preview = new Preview(document.querySelector('#container'), 'player', 'public-7p7n35m68yzvbgrug2gfamfo');
 
@@ -26,6 +46,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  const xAlignmentInput = document.getElementById('x-alignment') as HTMLInputElement;
+  const yAlignmentInput = document.getElementById('y-alignment') as HTMLInputElement;
+
+  console.log(xAlignmentInput, yAlignmentInput);
+  xAlignmentInput.addEventListener('input', (e) => {
+    console.log('x alignment', (e.target as HTMLInputElement).value);
+    handleVideoCenter('x', parseFloat((e.target as HTMLInputElement).value));
+  });
+
+  yAlignmentInput.addEventListener('input', (e) => {
+    handleVideoCenter('y', parseFloat((e.target as HTMLInputElement).value));
+  });
   preview.onReady = async () => {
 
     await preview.setSource({
